@@ -1,0 +1,28 @@
+# HISTORY OPTIONS
+HISTFILESIZE=1000000000
+HISTSIZE=1000000000
+HISTCONTROL=ignoredups:erasedups # Avoid duplicates
+# When the shell exits, append to the history file instead of overwriting it
+shopt -s histappend
+# After each command, append to the history file and reread it
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+
+bind '"[A":history-search-backward'
+bind '"[B":history-search-forward'
+
+function RB_disp_notification {	
+	$(osascript -e "display notification \"$2\" with title \"$1\"")
+}
+export -f RB_disp_notification
+function RB_make {
+	make "$@"
+	result=$?
+	if [ $result -eq 0 ];
+	then
+		RB_disp_notification "Build complete" "Success!"
+	elif [ ! $result -eq 130 ];
+	then
+		RB_disp_notification "Build complete" "Failed!"
+	fi
+} 
+export -f RB_make
