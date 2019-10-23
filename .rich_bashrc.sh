@@ -7,9 +7,14 @@ shopt -s histappend
 # After each command, append to the history file and reread it
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 
-# Allows for searching after entering part of command
-bind '"[A":history-search-backward'
-bind '"[B":history-search-forward'
+# If interactive
+if [ ! -z "$PS1" ]; then
+	# Allows for searching after entering part of command
+	bind '"[A":history-search-backward'
+	bind '"[B":history-search-forward'
+else
+	echo "Not sure which other commands can be used for non-interactive terminal."
+fi
 
 git config --global user.name "rijobro"
 git config --global user.email "richard.brown@ucl.ac.uk"
