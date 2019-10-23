@@ -7,11 +7,28 @@ shopt -s histappend
 # After each command, append to the history file and reread it
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 
+# Allows for searching after entering part of command
 bind '"[A":history-search-backward'
 bind '"[B":history-search-forward'
 
-function RB_disp_notification {	
-	$(osascript -e "display notification \"$2\" with title \"$1\"")
+######################################################
+#                   LINUX
+######################################################
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+	alias open='xdg-open'
+fi
+
+######################################################
+#                   Notifications
+######################################################
+
+function RB_disp_notification {
+	if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+		zenity --notification --text="${1}: ${2}"
+	elif [ "$(uname)" == "Darwin" ]; then
+		$(osascript -e "display notification \"$2\" with title \"$1\"")
+	fi
+
 }
 export -f RB_disp_notification
 function RB_make {
