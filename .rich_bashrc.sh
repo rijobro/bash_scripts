@@ -14,10 +14,11 @@ bind '"[B":history-search-forward'
 git config --global user.name "rijobro"
 git config --global user.email "richard.brown@ucl.ac.uk"
 
+
 ######################################################
 #                   LINUX
 ######################################################
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+if [ "$(uname)" != "Darwin" ] && [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 	alias open='xdg-open'
 	# Save github password for an hour
 	git config --global credential.helper cache
@@ -29,10 +30,10 @@ fi
 ######################################################
 
 function RB_disp_notification {
-	if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-		zenity --notification --text="${1}: ${2}"
-	elif [ "$(uname)" == "Darwin" ]; then
+	if [ "$(uname)" == "Darwin" ]; then
 		$(osascript -e "display notification \"$2\" with title \"$1\"")
+	elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+		zenity --notification --text="${1}: ${2}"
 	fi
 
 }
