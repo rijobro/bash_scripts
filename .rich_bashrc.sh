@@ -11,6 +11,9 @@ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; h
 bind '"[A":history-search-backward'
 bind '"[B":history-search-forward'
 
+git config --global user.name "rijobro"
+git config --global user.email "richard.brown@ucl.ac.uk"
+
 ######################################################
 #                   LINUX
 ######################################################
