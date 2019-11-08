@@ -1,17 +1,38 @@
+if [ -n "$ZSH_VERSION" ]; then
+	shell=zsh
+elif [ -n "$BASH_VERSION" ]; then
+	shell=bash
+else
+	echo "Not sure what type of terminal we're in!"
+fi
+
 # HISTORY OPTIONS
 HISTFILESIZE=1000000000
 HISTSIZE=1000000000
-HISTCONTROL=ignoredups:erasedups # Avoid duplicates
 # When the shell exits, append to the history file instead of overwriting it
-shopt -s histappend
-# After each command, append to the history file and reread it
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+if [[ "$shell" == "zsh" ]]; then
+	HISTFILE=~/.zsh_history     #Where to save history to disk
+	SAVEHIST=$HISTSIZE          #Number of history entries to save to disk
+	HISTDUP=erase               #Erase duplicates in the history file
+	setopt    appendhistory     #Append history to the history file (no overwriting)
+	setopt    sharehistory      #Share history across terminals
+	setopt    incappendhistory  #Immediately append to the history file, not just when a term is killed
+elif [[ "$shell" == "bash" ]]; then
+	# After each command, append to the history file and reread it
+	HISTCONTROL=ignoredups:erasedups # Avoid duplicates
+	PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+fi
 
 # If interactive
 if [ ! -z "$PS1" ]; then
 	# Allows for searching after entering part of command
-	bind '"[A":history-search-backward'
-	bind '"[B":history-search-forward'
+	if [[ "$shell" == "zsh" ]]; then
+		bindkey "^[[A" history-search-backward
+		bindkey "^[[B" history-search-forward
+	elif [[ "$shell" == "bash" ]]; then
+		bind '"[A":history-search-backward'
+		bind '"[B":history-search-forward'
+	fi
 else
 	echo "Not sure which other commands can be used for non-interactive terminal."
 fi
@@ -35,23 +56,27 @@ fi
 ######################################################
 
 function RB_disp_notification {
-	if [ "$(uname)" == "Darwin" ]; then
+	if [[ "$(uname)" == "Darwin" ]]; then
 		$(osascript -e "display notification \"$2\" with title \"$1\"")
-	elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+	elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
 		zenity --notification --text="${1}: ${2}"
 	fi
-
 }
-export -f RB_disp_notification
+if [[ "$shell" == "bash" ]]; then
+	export -f RB_disp_notification
+fi
+
 function RB_make {
 	make "$@"
 	result=$?
-	if [ $result -eq 0 ];
+	if [[ $result -eq 0 ]];
 	then
 		RB_disp_notification "Build complete" "Success!"
-	elif [ ! $result -eq 130 ];
+	elif [[ ! $result -eq 130 ]];
 	then
 		RB_disp_notification "Build complete" "Failed!"
 	fi
 } 
-export -f RB_make
+if [[ "$shell" == "bash" ]]; then
+	export -f RB_make
+fi
