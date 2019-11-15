@@ -27,8 +27,12 @@ fi
 if [ ! -z "$PS1" ]; then
 	# Allows for searching after entering part of command
 	if [[ "$shell" == "zsh" ]]; then
-		bindkey "^[[A" history-search-backward
-		bindkey "^[[B" history-search-forward
+		autoload -U up-line-or-beginning-search
+		autoload -U down-line-or-beginning-search
+		zle -N up-line-or-beginning-search
+		zle -N down-line-or-beginning-search
+		bindkey "^[[A" up-line-or-beginning-search # Up
+		bindkey "^[[B" down-line-or-beginning-search # Down
 	elif [[ "$shell" == "bash" ]]; then
 		bind '"[A":history-search-backward'
 		bind '"[B":history-search-forward'
