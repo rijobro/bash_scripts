@@ -3,4 +3,4 @@
 
 # But not these files...
 !.gitignore
-!.rich_bashrc.sh
+!rich_bashrc.sh
