@@ -37,8 +37,6 @@ if [ ! -z "$PS1" ]; then
 		bind '"[A":history-search-backward'
 		bind '"[B":history-search-forward'
 	fi
-else
-	echo "Not sure which other commands can be used for non-interactive terminal."
 fi
 
 git config --global user.name "rijobro"
