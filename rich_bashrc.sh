@@ -69,17 +69,18 @@ if [[ "$shell" == "bash" ]]; then
 	export -f RB_disp_notification
 fi
 
-function RB_make {
-	make "$@"
+function RB_ {
+	command="$@"
+	"$@"
 	result=$?
 	if [[ $result -eq 0 ]];
 	then
-		RB_disp_notification "Build complete" "Success!"
+		RB_disp_notification "Task complete: Success!" "$command"
 	elif [[ ! $result -eq 130 ]];
 	then
-		RB_disp_notification "Build complete" "Failed!"
+		RB_disp_notification "Task complete: Failed!" "$command"
 	fi
 } 
 if [[ "$shell" == "bash" ]]; then
-	export -f RB_make
+	export -f RB_
 fi
