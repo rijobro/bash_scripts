@@ -62,7 +62,10 @@ function RB_disp_notification {
 	if [[ "$(uname)" == "Darwin" ]]; then
 		$(osascript -e "display notification \"$2\" with title \"$1\"")
 	elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
-		zenity --notification --text="${1}: ${2}"
+		zenity --notification --text="${1}: ${2}" > /dev/null 2>&1
+		if [ -f ~/tmp/notifications.log ]; then
+			echo "${1}: ${2}" >> ~/tmp/notifications.log
+		fi
 	fi
 }
 if [[ "$shell" == "bash" ]]; then
@@ -73,18 +76,24 @@ function RB_ {
 	command="$@"
 	"$@"
 	result=$?
-	if [[ $result -eq 0 ]];
-	then
+	if [[ $result -eq 0 ]]; then
 		RB_disp_notification "Task complete: Success!" "$command"
-	elif [[ ! $result -eq 130 ]];
-	then
+	elif [[ ! $result -eq 130 ]]; then
 		RB_disp_notification "Task complete: Failed!" "$command"
 	fi
+	return $result
 } 
 if [[ "$shell" == "bash" ]]; then
 	export -f RB_
 fi
 
+# For getting ssh notifications
+function RB_watch_ssh {
+	ssh $1 'mkdir -p ~/tmp && echo "Watching server notifications" > ~/tmp/notifications.log && tail -f ~/tmp/notifications.log' | \
+	while read line; do
+		RB_disp_notification "$1: $line"
+	done
+}
 
 # Delete all remote git branches - useful for when forking and only want master
 alias git_del_remote_branches="git branch -r | grep rijobro | while read -r line ; do git push rijobro --delete ${line#"rijobro/"}; done"
