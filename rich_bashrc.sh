@@ -84,3 +84,7 @@ function RB_ {
 if [[ "$shell" == "bash" ]]; then
 	export -f RB_
 fi
+
+
+# Delete all remote git branches - useful for when forking and only want master
+alias git_del_remote_branches="git branch -r | grep rijobro | while read -r line ; do git push rijobro --delete ${line#"rijobro/"}; done"
