@@ -42,7 +42,7 @@ fi
 git config --global user.name "rijobro"
 git config --global user.email "richard.brown@ucl.ac.uk"
 
-alias del='mv "$@" ~/.Trashes'
+alias del='mv "$@" ~/.Trash'
 
 ######################################################
 #                   LINUX
