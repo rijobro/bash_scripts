@@ -59,6 +59,10 @@ fi
 ######################################################
 
 function RB_disp_notification {
+	if [ "$#" -eq 2 ]; then
+		echo "Error: $0 expects 2 arguments"
+		return 1
+	fi
 	if [[ "$(uname)" == "Darwin" ]]; then
 		$(osascript -e "display notification \"$2\" with title \"$1\"")
 	elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
@@ -73,6 +77,10 @@ if [[ "$shell" == "bash" ]]; then
 fi
 
 function RB_ {
+	if [ "$#" -eq 0 ]; then
+		echo "Error: $0 expects at least 1 argument."
+		return 1
+	fi
 	command="$@"
 	"$@"
 	result=$?
@@ -89,6 +97,10 @@ fi
 
 # For getting ssh notifications
 function RB_watch_ssh {
+	if [ "$#" -ne 1 ]; then
+		echo "Error: $0 expects user@address as argument."
+		return 1
+	fi
 	ssh $1 'mkdir -p ~/tmp && echo "Watching server notifications" > ~/tmp/notifications.log && tail -f ~/tmp/notifications.log' | \
 	while read line; do
 		RB_disp_notification "$1: $line"
