@@ -59,7 +59,7 @@ fi
 ######################################################
 
 function RB_disp_notification {
-	if [ "$#" -eq 2 ]; then
+	if [ "$#" -ne 2 ]; then
 		echo "Error: $0 expects 2 arguments"
 		return 1
 	fi
