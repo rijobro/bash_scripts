@@ -103,7 +103,7 @@ function RB_watch_ssh {
 	fi
 	ssh $1 'mkdir -p ~/tmp && echo "Watching server notifications" > ~/tmp/notifications.log && tail -f ~/tmp/notifications.log' | \
 	while read line; do
-		RB_disp_notification "$1: $line"
+		RB_disp_notification "$1" "$line"
 	done
 }
 
