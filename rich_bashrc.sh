@@ -102,7 +102,25 @@ function RB_watch_ssh {
 	while read line; do
 		RB_disp_notification "$1" "$line"
 	done
+	RB_disp_notification "$1" "Stopping watch of notifications"
+	if [[ "$(uname)" == "Darwin" ]]; then
+		say "Stopping watching $1 for notifications"
+	fi
 }
 
 # Delete all remote git branches - useful for when forking and only want master
 alias git_del_remote_branches="git branch -r | grep rijobro | while read -r line ; do git push rijobro --delete ${line#"rijobro/"}; done"
+
+######################################################
+#                   Notifications
+######################################################
+
+function RB_vnc_ssh () {
+	host=$1
+	port=${2:-5901}
+	localport=$((30000 + RANDOM % 20000))
+	ssh -o ExitOnForwardFailure=yes -fNL "${localport}:localhost:$port" "$host" || return 1
+	pid=$(lsof -t -i:$localport)
+	open -W vnc://localhost:$localport
+	kill "$pid"
+}
