@@ -124,3 +124,26 @@ function RB_vnc_ssh () {
 	open -W vnc://localhost:$localport
 	kill "$pid"
 }
+
+######################################################
+#                   Mac Docker
+######################################################
+
+if [[ "$(uname)" == "Darwin" ]]; then
+	function docker_is_running() {
+		command docker system info > /dev/null 2>&1 && echo 0 || echo 1
+	}
+	function docker() {
+		if [[ "$1" == "run" && "$(docker_is_running)" != "0" ]]; then
+			echo -e "\n\nStarting daemon...\n\n"
+			open --background -a Docker
+			while [[ "$(docker_is_running)" != "0" ]]; do
+				sleep 1
+			done
+		fi
+		command docker "${@}"
+	}
+	function docker_stop() {
+		test -z "$(docker ps -q 2>/dev/null)" && osascript -e 'quit app "Docker"'
+	}
+fi
