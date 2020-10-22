@@ -137,6 +137,10 @@ if [[ "$(uname)" == "Darwin" ]]; then
 		if [[ "$1" == "run" && "$(docker_is_running)" != "0" ]]; then
 			echo -e "\n\nStarting daemon...\n\n"
 			open --background -a Docker
+			res=$?
+			if [ $res -ne 0 ]; then
+				return $res
+			fi
 			while [[ "$(docker_is_running)" != "0" ]]; do
 				sleep 1
 			done
