@@ -21,6 +21,8 @@ elif [[ "$shell" == "bash" ]]; then
 	# After each command, append to the history file and reread it
 	HISTCONTROL=ignoredups:erasedups # Avoid duplicates
 	PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+	# add timestamp
+	export HISTTIMEFORMAT="%F %T "
 fi
 
 # If interactive
