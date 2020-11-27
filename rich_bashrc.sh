@@ -136,16 +136,18 @@ if [[ "$(uname)" == "Darwin" ]]; then
 		command docker system info > /dev/null 2>&1 && echo 0 || echo 1
 	}
 	function docker() {
-		if [[ "$1" == "run" && "$(docker_is_running)" != "0" ]]; then
-			echo -e "\n\nStarting daemon...\n\n"
-			open --background -a Docker
-			res=$?
-			if [ $res -ne 0 ]; then
-				return $res
+		if [[ "$1" == "run" || "$1" == "build" ]]; then
+			if [[ "$(docker_is_running)" != "0" ]]; then
+				echo -e "\n\nStarting daemon...\n\n"
+				open --background -a Docker
+				res=$?
+				if [ $res -ne 0 ]; then
+					return $res
+				fi
+				while [[ "$(docker_is_running)" != "0" ]]; do
+					sleep 1
+				done
 			fi
-			while [[ "$(docker_is_running)" != "0" ]]; do
-				sleep 1
-			done
 		fi
 		command docker "${@}"
 	}
