@@ -44,7 +44,7 @@ fi
 alias del='mv "$@" ~/.Trash'
 
 ######################################################
-#                   LINUX
+#                   LINUX AND GIT
 ######################################################
 if [ "$(uname)" != "Darwin" ] && [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 	alias open='xdg-open'
@@ -52,6 +52,7 @@ if [ "$(uname)" != "Darwin" ] && [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]
 	git config --global credential.helper cache
 	git config --global credential.helper 'cache --timeout=3600'
 fi
+git config --global pager.branch false
 
 ######################################################
 #                   Notifications
