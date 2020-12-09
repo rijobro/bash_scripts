@@ -1,6 +1,1 @@
-# Ignore everything
-*
-
-# But not these files...
-!.gitignore
-!rich_bashrc.sh
+.DS_Store
