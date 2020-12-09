@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+# If OSX, check for sshfs
+if [ "$(uname)" == "Darwin" ]; then
+  if ! command -v sshfs &> /dev/null; then
+    echo "sshfs could not be found"
+    exit
+  fi
+fi
+
 function RB_actual_mount {
 
   # Figure out if we're on linux or osx
@@ -41,10 +49,16 @@ if [ "$#" -eq 0 ] || [ $1 == "CS" ]; then
   RB_actual_mount rbrown@bchuckle.cs.ucl.ac.uk:/home/rbrown/                                  ~/Documents/Mounts CS
   RB_actual_mount rbrown@bchuckle.cs.ucl.ac.uk:/SAN/inm/moco/headmoco                         ~/Documents/Mounts CS_data
 fi
-# RAL
-if [ "$#" -eq 0 ] || [ $1 == "RAL" ]; then
-  RB_actual_mount 130.246.214.106:/home/rich/Documents/Data ~/Documents/Mounts RAL_GPU_data
-  RB_actual_mount 130.246.214.106:/home/rich/Documents/Code ~/Documents/Mounts RAL_GPU_code
-  RB_actual_mount 130.246.214.97:/home/rich/Documents/Data  ~/Documents/Mounts RAL_CPU_data
-  RB_actual_mount 130.246.214.97:/home/rich/Documents/Code  ~/Documents/Mounts RAL_CPU_code
+# RALG
+if [ "$#" -eq 0 ] || [ $1 == "ralg" ]; then
+  RB_actual_mount ralg:/ ~/Documents/Mounts RALG
+fi
+# RALC
+if [ "$#" -eq 0 ] || [ $1 == "ralc" ]; then
+  RB_actual_mount ralc:/  ~/Documents/Mounts RALC
+fi
+
+# DGX
+if [ "$#" -eq 0 ] || [ $1 == "dgx" ]; then
+  RB_actual_mount dgx:/  ~/Documents/Mounts dgx
 fi
