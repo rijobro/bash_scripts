@@ -97,7 +97,11 @@ if [[ "$shell" == "bash" ]]; then
 	export -f RB_
 fi
 # Bind the ctrl+j to use the RB_ function
-bind '"\C-j": "\C-aRB_ \C-m"'
+if [ ! -z "$PS1" ]; then
+	if [[ "$shell" == "bash" ]]; then
+		bind '"\C-j": "\C-aRB_ \C-m"'
+	fi
+fi
 
 # For getting ssh notifications
 function RB_watch_ssh {
