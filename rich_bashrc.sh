@@ -67,8 +67,8 @@ function RB_disp_notification {
 		$(osascript -e "display notification \"$2\" with title \"$1\"")
 	elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
 		zenity --notification --text="${1}: ${2}" > /dev/null 2>&1
-		if [ -f ~/tmp/notifications.log ]; then
-			echo "${1}: ${2}" >> ~/tmp/notifications.log
+		if [ -f ~/.tmp/notifications.log ]; then
+			echo "${1}: ${2}" >> ~/.tmp/notifications.log
 		fi
 	fi
 }
@@ -90,18 +90,20 @@ function RB_ {
 		RB_disp_notification "Task complete: Failed!" "$command"
 	fi
 	return $result
-} 
+}
 if [[ "$shell" == "bash" ]]; then
 	export -f RB_
 fi
+# Bind the ctrl+j to use the RB_ function
+bind '"\C-j": "\C-aRB_ \C-m"'
 
 # For getting ssh notifications
 function RB_watch_ssh {
 	if [ "$#" -ne 1 ]; then
-		echo "Error: $0 expects user@address as argument."
+		echo "Error: $0 expects server (e.g., user@address:port) as argument."
 		return 1
 	fi
-	ssh $1 'mkdir -p ~/tmp && echo "Watching server notifications" > ~/tmp/notifications.log && tail -f ~/tmp/notifications.log' | \
+	ssh $1 'mkdir -p ~/.tmp && echo "Watching server notifications" > ~/.tmp/notifications.log && tail -f ~/.tmp/notifications.log' | \
 	while read line; do
 		RB_disp_notification "$1" "$line"
 	done
