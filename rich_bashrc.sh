@@ -53,6 +53,8 @@ if [ "$(uname)" != "Darwin" ] && [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]
 	git config --global credential.helper 'cache --timeout=3600'
 fi
 git config --global pager.branch false
+git config --global user.name "Richard Brown"
+git config --global user.email "33289025+rijobro@users.noreply.github.com"
 
 ######################################################
 #                   Notifications
