@@ -127,11 +127,22 @@ function RB_watch_ssh {
 		RB_disp_notification "$1" "$line"
 	done
 	RB_disp_notification "$1" "Stopping watch of notifications"
-	if [[ "$(uname)" == "Darwin" ]]; then
-		say "Stopping watching $1 for notifications"
-	fi
+	# if [[ "$(uname)" == "Darwin" ]]; then
+	# 	say "Stopping watching $1 for notifications"
+	# fi
 }
-
+# Connect via SSH and watch for notifications
+function RB_ssh {
+	if [ "$#" -ne 1 ]; then
+		echo "Error: $0 expects server (e.g., user@address:port) as argument."
+		return 1
+	fi
+	RB_watch_ssh $1 </dev/null &
+	pid=$(( $! + 1 ))
+	disown  # need to disown to not get message when killing pid at end
+	ssh $1
+	kill $pid
+}
 ######################################################
 #                   Notifications
 ######################################################
