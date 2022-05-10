@@ -62,3 +62,8 @@ fi
 if [ "$#" -eq 0 ] || [ $1 == "dgx" ]; then
   RB_actual_mount dgx:/nfs/home/rbrown/  ~/Documents/Mounts dgx
 fi
+
+# rb-monai
+if [ "$#" -eq 0 ] || [ $1 == "rb-monai" ]; then
+  RB_actual_mount rb-monai:/home/rbrown/  ~/Documents/Mounts rb-monai
+fi

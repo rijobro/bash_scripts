@@ -139,9 +139,9 @@ function RB_ssh {
 	fi
 	RB_watch_ssh $1 </dev/null &
 	pid=$(( $! + 1 ))
+	trap "kill $pid 2> /dev/null" EXIT
 	disown  # need to disown to not get message when killing pid at end
 	ssh $1
-	kill $pid
 }
 ######################################################
 #                   Notifications
@@ -166,7 +166,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 		command docker system info > /dev/null 2>&1 && echo 0 || echo 1
 	}
 	function docker() {
-		if [[ "$1" == "run" || "$1" == "build" ]]; then
+		if [[ "$1" == "run" || "$1" == "build" || "$1" == "search" ]]; then
 			if [[ "$(docker_is_running)" != "0" ]]; then
 				echo -e "\n\nStarting daemon...\n\n"
 				open --background -a Docker
