@@ -46,9 +46,6 @@ alias del='mv "$@" ~/.Trash'
 ######################################################
 if [ "$(uname)" != "Darwin" ] && [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 	alias open='xdg-open'
-	# Save github password for an hour
-	git config --global credential.helper cache
-	git config --global credential.helper 'cache --timeout=3600'
 fi
 
 ######################################################
