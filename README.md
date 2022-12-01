@@ -1,1 +1,1 @@
-bash_profile
+Bash scripts to make my life a bit easier across devices.
