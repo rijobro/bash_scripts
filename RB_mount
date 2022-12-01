@@ -1,0 +1,118 @@
+#!/bin/bash
+
+set -e # stop on error
+
+
+############################################################################################
+# Output formatting
+############################################################################################
+green=""
+red=""
+noColour=""
+
+# if stdout is a terminal
+if [[ -t 1 ]]; then
+  green="$(tput bold; tput setaf 2)"
+  red="$(tput bold; tput setaf 1)"
+  noColour="$(tput sgr0)"
+fi
+
+############################################################################################
+# Usage
+############################################################################################
+print_usage()
+{
+    # Display Help
+    echo "Mount remote directories with SSHFS."
+    echo
+    echo "Syntax:"
+    echo "${0##*/} [-h|--help] <remote> <local>"
+    echo "   example: ${0##*/} <remote_name>:<remote_dir> <local>"
+    echo
+    echo "options:"
+    echo "-h, --help              : Print this help."
+    echo
+}
+
+
+############################################################################################
+# Parse input arguments
+############################################################################################
+script_args=()
+while [[ $# -gt 0 ]]; do
+  arg="$1"
+  shift
+  if [[ $arg != -* ]]; then
+    script_args+=("${arg}")
+  else
+    case $arg in
+      -h|--help)
+        print_usage
+        exit 0
+      ;;
+      *)
+        print_usage
+        echo "${red}ERROR: Unknown arg: $arg.${noColour}"
+        exit 1
+      ;;
+    esac
+  fi
+done
+
+expected=2
+if [ ${#script_args[@]} -ne $expected ]; then
+  print_usage
+  echo "${red}ERROR: Expected $expected positional argument(s).${noColour}"
+  exit 1
+fi
+
+remote="${script_args[0]}"
+local="${script_args[1]}"
+
+
+############################################################################################
+# Check for sshfs, add arguments depending on OS, check no ~ in remote, make output folder
+############################################################################################
+
+# If OSX, check for sshfs
+if [ "$(uname)" == "Darwin" ]; then
+  if ! command -v sshfs &> /dev/null; then
+    echo "${red}ERROR: sshfs could not be found. On OSX, visit https://osxfuse.github.io/.${noColour}"
+    exit 1
+  fi
+fi
+
+# Figure out if we're on linux or osx
+# Linux
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+  volname="fsname"
+# OSX
+else
+  extra_flags=",defer_permissions"
+  volname="volname"
+  local_arg=" -o local"
+fi
+
+# if already mounted, nothing to do.
+if [ "$(find "${local}" -mindepth 1 -print -quit 2>/dev/null)" ]; then
+  echo -e "\n${green}${local} already mounted, nothing to do.${noColour}"
+  exit 0
+fi
+
+if [[ "$remote" == *:~* ]]; then
+  echo "${red}ERROR: ~ not permitted in remote path.${noColour}"
+  exit 1
+fi
+
+# Get child mount dir. Make directory if necessary
+local_mount_dir=$(basename "${local}")
+mkdir -p "${local}"
+
+
+############################################################################################
+# Mount
+############################################################################################
+echo "${green}Mounting \"$remote\" to \"$local\"...${noColour}"
+sshfs -o allow_other${extra_flags} "${remote}" "${local}" -o ${volname}="${local_mount_dir}" $local_arg \
+&& echo -e "\t${green}done.${noColour}" \
+|| echo -e "\t${red}ERROR: Mounting failed.${noColour}"

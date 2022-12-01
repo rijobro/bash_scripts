@@ -1,0 +1,99 @@
+#!/bin/bash
+
+set -e # stop on error
+
+
+############################################################################################
+# Output formatting
+############################################################################################
+green=""
+red=""
+noColour=""
+
+# if stdout is a terminal
+if [[ -t 1 ]]; then
+  green="$(tput bold; tput setaf 2)"
+  red="$(tput bold; tput setaf 1)"
+  noColour="$(tput sgr0)"
+fi
+
+
+############################################################################################
+# Usage
+############################################################################################
+print_usage()
+{
+    # Display Help
+    echo "Unmount remote directories that have been mounted with SSHFS."
+    echo "    NB: this script can be run as \"sudo\", which then calls \"sudo unmount -f\"."
+    echo
+    echo "Syntax:"
+    echo "${0##*/} [-h|--help] [-l|--list] <dir>"
+    echo
+    echo "options:"
+    echo "-h, --help              : Print this help."
+    echo "-l, --list              : List all mounted devices and exit."
+    echo
+}
+
+
+############################################################################################
+# Parse input arguments
+############################################################################################
+script_args=()
+while [[ $# -gt 0 ]]; do
+  arg="$1"
+  shift
+  if [[ $arg != -* ]]; then
+    script_args+=("${arg}")
+  else
+    case $arg in
+      -h|--help)
+        print_usage
+        exit 0
+      ;;
+      -l|--list)
+        mount
+        exit 0
+      ;;
+      *)
+        print_usage
+        echo "${red}ERROR: Unknown arg: $arg.${noColour}"
+        exit 1
+      ;;
+    esac
+  fi
+done
+
+expected=1
+if [ ${#script_args[@]} -ne $expected ]; then
+  print_usage
+  echo "${red}ERROR: Expected $expected positional argument(s).${noColour}"
+  exit 1
+fi
+
+# get absolute path
+path=$(readlink -f "${script_args[0]}")
+
+
+############################################################################################
+# Unmount
+############################################################################################
+# list of all mounted folders
+mounted=$(mount)
+
+# Check
+if ! [[ $mounted =~ .*$path.* ]]; then
+  echo "${red}ERROR: Path not found or not a mounted directory.${noColour}"
+  exit 1
+fi
+
+echo "${green}Unmounting $path...${noColour}"
+
+# If sudo
+if [ "$EUID" -ne 0 ]; then
+  umount "$path"
+else
+  sudo umount -f "$path"
+fi
+echo -e "\t${green}Done!${noColour}"
