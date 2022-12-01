@@ -96,4 +96,6 @@ if [ "$EUID" -ne 0 ]; then
 else
   sudo umount -f "$path"
 fi
+# Delete path
+rm -rf "$path"
 echo -e "\t${green}Done!${noColour}"
