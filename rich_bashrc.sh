@@ -26,7 +26,7 @@ elif [[ "$shell" == "bash" ]]; then
 fi
 
 # If interactive
-if [ ! -z "$PS1" ]; then
+if [ -t 1 ]; then
 	# Allows for searching after entering part of command
 	if [[ "$shell" == "zsh" ]]; then
 		autoload -U up-line-or-beginning-search
